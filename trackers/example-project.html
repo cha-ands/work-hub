@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Example Project Tracker</title>
+<style>
+  body { font-family: "Segoe UI", system-ui, sans-serif; background: #f6fbff; color: #233; margin: 0; padding: 24px; }
+  h1 { margin-top: 0; }
+  section { background: #fff; border: 2px solid #233; border-radius: 14px; padding: 12px 20px; margin-bottom: 18px; }
+  code { background: #eef; padding: 1px 5px; border-radius: 4px; }
+  .done { text-decoration: line-through; opacity: .6; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid #dde; }
+</style>
+</head>
+<body>
+  <h1>Example Project</h1>
+  <p>This sample shows the markup Work Hub pulls to-dos from. Delete it once you've added your own trackers.</p>
+
+  <section>
+    <h2>1. A list with class <code>todo</code></h2>
+    <ul class="todo">
+      <li>Draft the kickoff deck</li>
+      <li>⭐ Chase sign-off from finance</li>
+      <li class="done">Set up project channel</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>2. Any element with <code>data-todo</code></h2>
+    <p data-todo>Book user research sessions</p>
+    <p data-todo="Review vendor contract" data-urgent>Vendor contract is with legal (pulled with custom text, starred)</p>
+    <p data-todo data-category="Admin">Expense the conference tickets (goes to Admin)</p>
+  </section>
+
+  <section>
+    <h2>3. Unchecked checkboxes</h2>
+    <label><input type="checkbox"> Update the risk register</label><br>
+    <label><input type="checkbox" checked> Write the project brief</label>
+  </section>
+
+  <section>
+    <h2>4. Tables: put <code>data-todo</code> on the cell with the task</h2>
+    <table>
+      <thead><tr><th>Action</th><th>Owner</th><th>Due</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td data-todo>Confirm launch date with marketing</td><td>Me</td><td>30 Oct</td><td>Open</td></tr>
+        <tr><td data-todo data-done>Agree success metrics</td><td>Me</td><td>20 Oct</td><td>Done</td></tr>
+        <tr><td>Load test the API</td><td>Sam</td><td>2 Nov</td><td>Open</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>5. Charts render as normal (scripts run)</h2>
+    <canvas id="burn" width="560" height="200"></canvas>
+  </section>
+
+  <script>
+    // Tiny hand-drawn bar chart; Chart.js / Plotly etc. work the same way.
+    const ctx = document.getElementById("burn").getContext("2d");
+    const data = [34, 29, 25, 18, 12, 7];
+    data.forEach((v, i) => {
+      ctx.fillStyle = "#415bd1";
+      ctx.fillRect(30 + i * 85, 190 - v * 5, 50, v * 5);
+      ctx.fillStyle = "#233";
+      ctx.fillText("Wk " + (i + 1), 40 + i * 85, 200);
+    });
+  </script>
+</body>
+</html>

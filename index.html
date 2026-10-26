@@ -1,0 +1,986 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Work Hub</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='16' fill='%23c9a196'/><path d='M9 16.5l4.5 4.5L23 11.5' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<!-- Fonts are a nice-to-have: if the network blocks them, system fonts take over. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f6f1eb;          /* oat */
+  --surface: #fffdfa;     /* cream */
+  --surface-2: #fbf7f2;
+  --ink: #3e3530;         /* espresso */
+  --muted: #8b7f76;
+  --faint: #b5aaa0;
+  --line: #ebe3d9;
+  --line-strong: #ddd2c5;
+  --hover: #f4ede5;
+  --accent: #b98579;      /* dusty rose */
+  --accent-soft: #f5e8e3;
+  --on-accent: #ffffff;
+  --hot: #b9705a;         /* terracotta */
+  --hot-soft: #f8ece6;
+  --ok: #8d9e7e;          /* sage */
+  --ok-soft: #eef1e9;
+  --warn-soft: #f7efe2;
+  /* soft earthy category colours (names kept for the JS palette) */
+  --pink: #d3a5a0; --mint: #a7b597; --sun: #d8b88f; --lilac: #b9a6c6;
+  --sky: #a3b8c8; --peach: #e0b49c; --lime: #b9b98e; --aqua: #9fbfb6;
+  --shadow: 0 1px 2px rgba(90, 60, 40, .04), 0 4px 14px rgba(90, 60, 40, .05);
+  --shadow-lg: 0 14px 40px rgba(90, 60, 40, .16);
+  --radius: 14px;
+  --font: "DM Sans", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --serif: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1f1b19; --surface: #282321; --surface-2: #2d2826; --ink: #efe6dd; --muted: #a99d93; --faint: #776c64;
+    --line: #3a332f; --line-strong: #4a423d; --hover: #332d2a;
+    --accent: #d9aa9d; --accent-soft: #3a2c28; --on-accent: #2a1f1c;
+    --hot: #e09a80; --hot-soft: #3a2620; --ok: #aabb99; --ok-soft: #283024; --warn-soft: #302820;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3); --shadow-lg: 0 14px 40px rgba(0, 0, 0, .5);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1f1b19; --surface: #282321; --surface-2: #2d2826; --ink: #efe6dd; --muted: #a99d93; --faint: #776c64;
+  --line: #3a332f; --line-strong: #4a423d; --hover: #332d2a;
+  --accent: #d9aa9d; --accent-soft: #3a2c28; --on-accent: #2a1f1c;
+  --hot: #e09a80; --hot-soft: #3a2620; --ok: #aabb99; --ok-soft: #283024; --warn-soft: #302820;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3); --shadow-lg: 0 14px 40px rgba(0, 0, 0, .5);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; font-family: var(--font); font-size: 14.5px; line-height: 1.45;
+  color: var(--ink); background: var(--bg); min-height: 100vh; overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+h1, h2, h3, h4 { font-weight: 600; margin: 0; letter-spacing: -.01em; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- header ---------- */
+.top {
+  max-width: 1440px; margin: 0 auto; padding: 20px 28px 6px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand .logo {
+  width: 38px; height: 38px; border-radius: 50%; background: var(--accent-soft); color: var(--accent);
+  display: grid; place-items: center; font-family: var(--serif); font-style: italic; font-weight: 500; font-size: 22px;
+}
+.brand h1 { font-family: var(--serif); font-weight: 600; font-size: 28px; line-height: 1; letter-spacing: 0; }
+.brand p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+.top .spacer { flex: 1; }
+.pill {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 500;
+  color: var(--muted); padding: 4px 10px; border-radius: 999px;
+}
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.pill.saved { color: var(--ok); }
+.pill.saving { color: var(--faint); }
+.pill.error { color: var(--hot); background: var(--hot-soft); }
+.iconbtn {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--line-strong); background: var(--surface); border-radius: 999px;
+  padding: 6px 12px; font-weight: 500; font-size: 13.5px; color: var(--ink);
+  transition: background .12s, border-color .12s;
+}
+.iconbtn:hover { background: var(--hover); }
+.iconbtn:active { background: var(--line); }
+
+/* ---------- tabs ---------- */
+.tabs {
+  max-width: 1440px; margin: 0 auto; padding: 10px 28px 0;
+  display: flex; gap: 2px; align-items: flex-end; overflow-x: auto; scrollbar-width: thin;
+}
+.tab {
+  flex: none; border: none; background: none; padding: 10px 14px; font-weight: 500; font-size: 14px;
+  color: var(--muted); border-bottom: 2px solid transparent;
+  display: inline-flex; align-items: center; gap: 8px; transition: color .12s;
+}
+.tab::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c); opacity: .9; }
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tab .count {
+  min-width: 20px; padding: 0 6px; border-radius: 999px; background: var(--hover);
+  color: var(--muted); font-size: 11.5px; font-weight: 600; text-align: center; line-height: 18px;
+}
+.tab[aria-selected="true"] .count { background: var(--accent-soft); color: var(--accent); }
+.tabs .refresh { flex: none; margin: 0 0 6px 8px; padding: 4px 9px; }
+.tabline { max-width: 1440px; margin: 0 auto; padding: 0 28px; }
+.tabline div { border-top: 1px solid var(--line); }
+
+/* ---------- layout ---------- */
+.app {
+  max-width: 1440px; margin: 0 auto; padding: 24px 28px 60px;
+  display: grid; grid-template-columns: 272px minmax(0, 1fr); gap: 28px; align-items: start;
+}
+@media (max-width: 860px) {
+  .app { grid-template-columns: minmax(0, 1fr); padding: 18px 16px 60px; }
+  .top, .tabs, .tabline { padding-left: 16px; padding-right: 16px; }
+}
+
+/* ---------- sidebar ---------- */
+.pad {
+  position: sticky; top: 16px; background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px;
+}
+@media (max-width: 860px) { .pad { position: static; } }
+.pad h2 { font-family: var(--serif); font-style: italic; font-weight: 500; font-size: 24px; letter-spacing: 0; margin-bottom: 10px; }
+.pad textarea {
+  width: 100%; resize: vertical; min-height: 68px; border: 1px solid var(--line-strong);
+  border-radius: 12px; padding: 10px 12px; background: var(--surface-2); line-height: 1.4;
+}
+.pad textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.pad .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 8px 0 2px; }
+.urgent-toggle {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; cursor: pointer;
+  border: 1px solid var(--line-strong); border-radius: 999px; padding: 3px 10px; color: var(--muted); user-select: none;
+}
+.urgent-toggle input { position: absolute; opacity: 0; pointer-events: none; }
+.urgent-toggle .s { color: var(--faint); }
+.urgent-toggle:has(input:checked) { background: var(--hot-soft); border-color: var(--hot); color: var(--hot); }
+.urgent-toggle:has(input:checked) .s { color: var(--hot); }
+.urgent-toggle:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.hint { font-size: 12.5px; color: var(--muted); margin: 8px 0 10px; line-height: 1.4; }
+.hint b { color: var(--ink); font-weight: 600; }
+.pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.catpill {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--line-strong); border-radius: 999px; padding: 4px 10px;
+  background: var(--surface); font-weight: 500; font-size: 13px; transition: background .12s, border-color .12s;
+}
+.catpill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
+.catpill:hover { background: var(--hover); border-color: var(--c); }
+.catpill.last { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.catpill small { color: var(--faint); font-size: 12px; }
+.newcat { display: flex; gap: 6px; margin-top: 14px; }
+.newcat input {
+  flex: 1; min-width: 0; border: 1px dashed var(--line-strong); border-radius: 999px;
+  padding: 5px 10px; background: transparent; font-size: 13px;
+}
+.newcat input:focus { outline: none; border: 1px solid var(--accent); }
+.tidy-toggle { margin-top: 10px; width: 100%; justify-content: center; color: var(--muted); }
+.tidy { list-style: none; margin: 10px 0 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; }
+.tidy[hidden] { display: none; }
+.tidy li { min-width: 0; display: flex; align-items: center; gap: 4px; padding: 4px 4px 4px 8px; border-radius: 6px; }
+.tidy li:hover { background: var(--hover); }
+.tidy .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c); flex: none; margin-right: 4px; }
+.tidy .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+.mini {
+  border: none; background: none; padding: 3px 6px; border-radius: 5px; font-size: 13px; line-height: 1; color: var(--muted);
+}
+.mini:hover { background: var(--hover); color: var(--ink); }
+.mini:disabled { opacity: .3; cursor: default; background: none; }
+
+/* ---------- toolbar ---------- */
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 18px; }
+.search {
+  flex: 1 1 220px; border: 1px solid var(--line-strong); border-radius: 999px; padding: 7px 16px;
+  background: var(--surface);
+}
+.search:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.toggle[aria-pressed="true"] { background: var(--hot-soft); border-color: var(--hot); color: var(--hot); }
+.stats { color: var(--faint); font-size: 13px; margin-left: 4px; }
+
+/* ---------- board ---------- */
+.board { columns: 300px; column-gap: 18px; }
+.card {
+  break-inside: avoid; display: inline-block; width: 100%; margin: 0 0 18px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+}
+.card-head {
+  display: flex; align-items: center; gap: 8px; padding: 11px 10px 11px 14px; border-bottom: 1px solid var(--line);
+}
+.card-head::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c); flex: none; }
+.card-head h3 { flex: 1; font-family: var(--serif); font-weight: 600; font-size: 20px; letter-spacing: 0; line-height: 1.15; min-width: 0; overflow-wrap: anywhere; cursor: text; }
+.bubble {
+  min-width: 22px; height: 20px; padding: 0 7px; display: grid; place-items: center;
+  background: var(--hover); color: var(--muted); border-radius: 999px; font-weight: 600; font-size: 11.5px;
+}
+.card-head .mini { opacity: 0; transition: opacity .12s; }
+.card-head:hover .mini, .card-head:focus-within .mini { opacity: 1; }
+@media (hover: none) { .card-head .mini { opacity: .7; } }
+.items { list-style: none; margin: 0; padding: 4px 0; }
+.item {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 10px; align-items: start;
+  padding: 7px 8px 7px 14px; position: relative;
+}
+.item:hover { background: var(--surface-2); }
+.item.urgent::before { content: ""; position: absolute; left: 0; top: 6px; bottom: 6px; width: 3px; border-radius: 0 3px 3px 0; background: var(--hot); }
+.item .text { line-height: 1.4; overflow-wrap: anywhere; cursor: text; padding-top: 1px; }
+.item .meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 3px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 500; color: var(--muted);
+}
+.chip[style]::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
+.chip.src { color: var(--faint); }
+.chip.src.bare { padding: 0; }
+.check {
+  width: 18px; height: 18px; margin-top: 2px; border-radius: 50%; border: 1.5px solid var(--line-strong);
+  background: var(--surface); display: grid; place-items: center; padding: 0;
+  font-weight: 700; font-size: 11px; color: var(--on-accent); transition: border-color .12s, background .12s;
+}
+.check:hover { border-color: var(--ok); }
+.item.done .check { background: var(--ok); border-color: var(--ok); color: #fff; }
+.item.done .text { text-decoration: line-through; color: var(--faint); }
+.star { border: none; background: none; padding: 0 2px; font-size: 15px; line-height: 1.3; color: var(--line-strong); transition: color .12s; }
+.star:hover { color: var(--hot); }
+.item.urgent .star { color: var(--hot); }
+.item .del { opacity: 0; transition: opacity .12s; }
+.item:hover .del, .item:focus-within .del { opacity: 1; }
+@media (hover: none) { .item .del { opacity: .6; } }
+.empty { padding: 12px 14px; color: var(--faint); font-size: 13px; }
+.done-today { border-top: 1px solid var(--line); padding: 2px 0 4px; }
+.done-today summary { padding: 7px 14px; cursor: pointer; font-size: 12.5px; color: var(--muted); }
+.edit-input {
+  width: 100%; border: 1px solid var(--accent); border-radius: 6px; padding: 2px 6px; background: var(--surface);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.card-head .edit-input { font-weight: 600; }
+
+.hotlist { --c: var(--hot); margin-bottom: 22px; border-color: color-mix(in srgb, var(--hot) 35%, var(--line)); }
+.hotlist .card-head { background: var(--hot-soft); border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0; }
+.hotlist .card-head h3 { cursor: default; color: var(--hot); }
+.hotlist .items { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }
+.hotlist .item.urgent::before { display: none; }
+
+/* ---------- completed ---------- */
+.days .item.done .text { text-decoration: none; color: var(--ink); }
+.brag-top { align-items: start; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 18px; margin-bottom: 30px; }
+.big { --c: var(--accent); }
+.big .card-body { padding: 10px 16px 16px; }
+.big h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 10px 0 6px; }
+.big ul { margin: 0 0 6px; padding-left: 0; list-style: none; }
+.big li { padding: 3px 0 3px 22px; position: relative; line-height: 1.4; }
+.big li::before { content: "✓"; position: absolute; left: 2px; top: 3px; font-weight: 700; color: var(--ok); font-size: 12px; }
+.big li.plan::before { content: "→"; color: var(--accent); }
+.big li .chip { margin-left: 6px; }
+.btnrow { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.section-title { margin: 6px 0 14px; font-family: var(--serif); font-style: italic; font-weight: 500; font-size: 26px; letter-spacing: 0; }
+.days { columns: 300px; column-gap: 18px; }
+.stamp { font-size: 12px; color: var(--muted); font-weight: 500; }
+.more { display: flex; margin: 0 auto; }
+
+/* ---------- tracker view ---------- */
+.tracker-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
+.tracker-bar h2 { font-family: var(--serif); font-weight: 600; font-size: 26px; letter-spacing: 0; flex: 1; min-width: 0; }
+.frames iframe {
+  width: 100%; height: calc(100vh - 190px); min-height: 520px; display: block;
+  border: 1px solid var(--line); border-radius: var(--radius); background: #fff; box-shadow: var(--shadow);
+}
+.frames iframe[hidden] { display: none; }
+/* Tracker tabs go full width unless the quick-add panel is asked for. */
+.app.wide { grid-template-columns: minmax(0, 1fr); }
+.app.wide .pad { display: none; }
+
+/* ---------- toast / dialog ---------- */
+.toast {
+  position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(calc(100% + 40px)); visibility: hidden;
+  background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; box-shadow: var(--shadow-lg);
+  font-size: 13.5px; font-weight: 500; display: flex; gap: 14px; align-items: center;
+  transition: transform .2s ease, visibility .2s; z-index: 50; max-width: calc(100vw - 32px);
+}
+.toast.show { transform: translateX(-50%) translateY(0); visibility: visible; }
+.toast button { background: none; color: inherit; border: none; padding: 0; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+dialog {
+  border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-lg);
+  background: var(--surface); color: var(--ink); padding: 22px; max-width: min(440px, calc(100vw - 32px));
+}
+dialog::backdrop { background: rgba(15, 15, 20, .4); }
+dialog h3 { font-family: var(--serif); font-size: 24px; letter-spacing: 0; margin-bottom: 8px; }
+dialog p { margin: 0 0 12px; line-height: 1.5; color: var(--muted); }
+dialog select { border: 1px solid var(--line-strong); border-radius: 6px; padding: 4px 8px; background: var(--surface); color: var(--ink); }
+.danger { color: var(--hot); border-color: color-mix(in srgb, var(--hot) 40%, var(--line-strong)); }
+.danger:hover { background: var(--hot-soft); }
+.banner {
+  max-width: 1440px; margin: 14px auto 0; padding: 12px 16px; background: var(--hot-soft); color: var(--hot);
+  border: 1px solid var(--hot); border-radius: 8px; font-weight: 500;
+}
+.banner code { background: rgba(0,0,0,.06); padding: 1px 6px; border-radius: 4px; }
+@keyframes nudge { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+.boing { animation: nudge .25s ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <div class="logo" aria-hidden="true">w</div>
+    <div>
+      <h1>Work Hub</h1>
+      <p id="greeting">Hello!</p>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <span id="saveStatus" class="pill saved">Saved</span>
+  <button id="themeBtn" class="iconbtn" title="Theme">Auto</button>
+</header>
+<div id="banner" class="banner" hidden></div>
+
+<nav class="tabs" id="tabs" role="tablist" aria-label="Views"></nav>
+<div class="tabline"><div></div></div>
+
+<div class="app">
+  <aside class="pad" aria-label="Quick add">
+    <h2>Quick add</h2>
+    <label class="sr-only" for="newText">New to-do</label>
+    <textarea id="newText" rows="2" placeholder="Add a to-do…   ( / to focus)"></textarea>
+    <div class="row">
+      <label class="urgent-toggle"><input type="checkbox" id="newUrgent"><span class="s">★</span> Urgent</label>
+    </div>
+    <p class="hint" id="addHint">Click a category to drop it in.</p>
+    <div class="pills" id="catPills"></div>
+    <form class="newcat" id="newCatForm">
+      <label class="sr-only" for="newCatName">New category name</label>
+      <input id="newCatName" placeholder="New category" autocomplete="off">
+      <button class="iconbtn" type="submit">Add</button>
+    </form>
+    <button class="iconbtn tidy-toggle" id="tidyToggle" aria-expanded="false">Manage categories</button>
+    <ul class="tidy" id="tidyList" hidden></ul>
+  </aside>
+
+  <main>
+    <section id="view-todo"></section>
+    <section id="view-brag" hidden></section>
+    <section id="view-tracker" hidden>
+      <div class="tracker-bar">
+        <h2 id="trackerTitle"></h2>
+        <a class="iconbtn" id="trackerOpen" target="_blank" rel="noopener" style="text-decoration:none">Open ↗</a>
+        <button class="iconbtn" id="trackerReload">Reload</button>
+        <button class="iconbtn" id="trackerPull">Pull to-dos</button>
+        <button class="iconbtn" id="trackerPad"></button>
+      </div>
+      <div class="frames" id="frames"></div>
+    </section>
+  </main>
+</div>
+
+<dialog id="dlg"></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+// ---------- helpers ----------
+const $ = (s) => document.querySelector(s);
+function h(tag, props, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    const aria = k.startsWith("aria-");
+    if (v == null || (v === false && !aria)) continue;
+    if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else if (k === "class") el.className = v;
+    else if (k === "style") el.style.cssText = v;
+    else el.setAttribute(k, v === true && !aria ? "" : v);
+  }
+  for (const c of kids.flat(Infinity)) {
+    if (c == null || c === false) continue;
+    el.append(c.nodeType ? c : String(c));
+  }
+  return el;
+}
+// replaceChildren() would print null/false as text, so drop them first.
+const fill = (el, ...kids) => el.replaceChildren(...kids.flat().filter((k) => k != null && k !== false && k !== ""));
+const pad2 = (n) => String(n).padStart(2, "0");
+const ymd = (d) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+const today = () => ymd(new Date());
+const fromYmd = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+const prettyDate = (s) => fromYmd(s).toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
+function lastWorkday() {
+  const d = new Date(); d.setDate(d.getDate() - 1);
+  while (d.getDay() === 0 || d.getDay() === 6) d.setDate(d.getDate() - 1);
+  return ymd(d);
+}
+const uid = () => Math.random().toString(36).slice(2, 8);
+const norm = (s) => s.toLowerCase().replace(/\s+/g, " ").trim();
+function hash(s) { let x = 7; for (const ch of s) x = (x * 31 + ch.codePointAt(0)) >>> 0; return x; }
+const PALETTE = ["--pink", "--mint", "--sun", "--lilac", "--sky", "--peach", "--lime", "--aqua"];
+const color = (name) => `var(${PALETTE[hash(norm(name)) % PALETTE.length]})`;
+function store(key, val) {
+  try { if (val === undefined) return localStorage.getItem(key); localStorage.setItem(key, val); } catch { return null; }
+}
+
+// ---------- state ----------
+const state = { cats: [], ignored: new Set(), trackers: [] };
+let tab = decodeURIComponent(location.hash.slice(1)) || store("wh.tab") || "todo";
+let lastCat = store("wh.lastCat") || "";
+let search = "", starOnly = false, tidyOpen = false, bragDays = 14;
+let padOnTrackers = store("wh.padOnTrackers") === "1";
+let editing = false, lastMd = null, saveTimer = null, saving = false;
+
+const pullKey = (src, text) => `${src}|${norm(text)}`;
+const findCat = (name) => state.cats.find((c) => norm(c.name) === norm(name));
+function getCat(name) {
+  let c = findCat(name);
+  if (!c) { c = { name, items: [] }; state.cats.push(c); }
+  return c;
+}
+const allItems = () => state.cats.flatMap((cat) => cat.items.map((it) => ({ it, cat })));
+
+// ---------- markdown <-> state ----------
+const STAR = /^⭐️?\s*/;
+const clean = (s) => String(s).replace(/[\r\n]+/g, " ").replace(/<!--|-->/g, "~").trim();
+
+function parseMd(md) {
+  const cats = [], ignored = new Set();
+  let cur = null, inIgnore = false;
+  const catFor = (name) => {
+    let c = cats.find((x) => norm(x.name) === norm(name));
+    if (!c) { c = { name, items: [] }; cats.push(c); }
+    return c;
+  };
+  for (const raw of md.replace(/\r/g, "").split("\n")) {
+    const line = raw.trim();
+    if (inIgnore) {
+      if (line === "-->") inIgnore = false;
+      else if (line) ignored.add(line);
+      continue;
+    }
+    if (line === "<!-- pulled-ignore") { inIgnore = true; continue; }
+    let m = line.match(/^##\s+(.+)$/);
+    if (m) { cur = catFor(m[1].trim()); continue; }
+    m = line.match(/^[-*]\s+\[( |x|X)\]\s+(.*)$/);
+    if (!m) continue;
+    let rest = m[2];
+    const meta = {};
+    const cm = rest.match(/\s*<!--(.*?)-->\s*$/);
+    if (cm) {
+      rest = rest.slice(0, cm.index);
+      for (const kv of cm[1].trim().split(/\s+/)) {
+        const i = kv.indexOf(":");
+        if (i > 0) { try { meta[kv.slice(0, i)] = decodeURIComponent(kv.slice(i + 1)); } catch {} }
+      }
+    }
+    rest = rest.trim();
+    const urgent = STAR.test(rest);
+    rest = rest.replace(STAR, "").trim();
+    if (!rest) continue;
+    const done = m[1] !== " ";
+    (cur || (cur = catFor("Inbox"))).items.push({
+      id: meta.id || uid(), text: rest, done, urgent,
+      added: meta.added || today(),
+      doneDate: done ? (meta.done || today()) : "",
+      src: meta.src || "",
+    });
+  }
+  return { cats, ignored };
+}
+
+function serialize() {
+  let out = "# Work Hub To-Dos\n\n<!-- Edit freely: \"## Category\", \"- [ ] task\", \"- [x] done\", ⭐ = urgent. The comments hold ids/dates. -->\n\n";
+  for (const cat of state.cats) {
+    out += `## ${clean(cat.name)}\n`;
+    for (const it of cat.items) {
+      const meta = [`id:${it.id}`, `added:${it.added}`, it.done && `done:${it.doneDate}`,
+        it.src && `src:${encodeURIComponent(it.src)}`].filter(Boolean).join(" ");
+      out += `- [${it.done ? "x" : " "}] ${it.urgent ? "⭐ " : ""}${clean(it.text)}  <!-- ${meta} -->\n`;
+    }
+    out += "\n";
+  }
+  if (state.ignored.size) out += "<!-- pulled-ignore\n" + [...state.ignored].map(clean).join("\n") + "\n-->\n";
+  return out;
+}
+
+// ---------- persistence ----------
+function setStatus(kind) {
+  const el = $("#saveStatus");
+  el.className = "pill " + kind;
+  el.textContent = { saving: "Saving…", saved: "Saved", error: "Not saved" }[kind];
+}
+function commit() {
+  render();
+  setStatus("saving");
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(save, 250);
+}
+async function save() {
+  saveTimer = null;
+  saving = true;
+  const md = serialize();
+  try {
+    const r = await fetch("/api/todos", { method: "PUT", body: md, headers: { "Content-Type": "text/markdown; charset=utf-8" } });
+    if (!r.ok) throw new Error(r.status);
+    lastMd = md;
+    setStatus("saved");
+  } catch {
+    setStatus("error");
+    toast("Couldn't save. Is the server running?");
+  } finally { saving = false; }
+}
+async function loadMd() {
+  const r = await fetch("/api/todos");
+  if (!r.ok) throw new Error(r.status);
+  const md = await r.text();
+  if (md === lastMd) return false;
+  const parsed = parseMd(md);
+  if (!parsed.cats.length) parsed.cats.push({ name: "Inbox", items: [] });
+  state.cats = parsed.cats;
+  state.ignored = parsed.ignored;
+  lastMd = md;
+  return true;
+}
+async function loadTrackers() {
+  try { state.trackers = await (await fetch("/api/trackers")).json(); } catch { state.trackers = []; }
+}
+async function pull(quiet) {
+  let items;
+  try { items = await (await fetch("/api/pull")).json(); }
+  catch { if (!quiet) toast("Couldn't reach the trackers"); return; }
+  const have = new Set(allItems().filter(({ it }) => it.src).map(({ it }) => pullKey(it.src, it.text)));
+  let added = 0;
+  for (const p of items) {
+    const key = pullKey(p.src, p.text);
+    if (have.has(key) || state.ignored.has(clean(key))) continue;
+    have.add(key);
+    getCat(p.category).items.push({ id: uid(), text: p.text, done: false, urgent: !!p.urgent, added: today(), doneDate: "", src: p.src });
+    added++;
+  }
+  if (added) { commit(); toast(`Pulled ${added} new to-do${added > 1 ? "s" : ""} from trackers`); }
+  else if (!quiet) toast("No new to-dos in the trackers");
+}
+
+// ---------- actions ----------
+function addItems(catName) {
+  const box = $("#newText");
+  const lines = box.value.split("\n").map((s) => s.trim()).filter(Boolean);
+  if (!lines.length) { box.focus(); box.classList.remove("boing"); void box.offsetWidth; box.classList.add("boing"); toast("Type a to-do first"); return; }
+  const cat = getCat(catName);
+  const urgent = $("#newUrgent").checked;
+  for (const text of lines) {
+    cat.items.push({ id: uid(), text: text.replace(STAR, ""), done: false, urgent: urgent || STAR.test(text), added: today(), doneDate: "", src: "" });
+  }
+  lastCat = cat.name; store("wh.lastCat", lastCat);
+  box.value = ""; $("#newUrgent").checked = false;
+  commit();
+  toast(`Added ${lines.length > 1 ? lines.length + " items" : ""} to ${cat.name}`.replace("  ", " "));
+  box.focus();
+}
+function toggleDone(it) {
+  it.done = !it.done;
+  it.doneDate = it.done ? today() : "";
+  if (it.done) {
+    toast("Marked done", "Undo", () => { it.done = false; it.doneDate = ""; commit(); });
+  }
+  commit();
+}
+function toggleStar(it) { it.urgent = !it.urgent; commit(); }
+let undoDelete = null;
+function deleteItem(it, cat) {
+  const idx = cat.items.indexOf(it);
+  cat.items.splice(idx, 1);
+  const ignoreKey = it.src ? clean(pullKey(it.src, it.text)) : null;
+  const wasIgnored = ignoreKey && state.ignored.has(ignoreKey);
+  if (ignoreKey) state.ignored.add(ignoreKey);
+  commit();
+  toast("Deleted", "Undo", () => {
+    if (!state.cats.includes(cat)) state.cats.push(cat);
+    cat.items.splice(Math.min(idx, cat.items.length), 0, it);
+    if (ignoreKey && !wasIgnored) state.ignored.delete(ignoreKey);
+    commit();
+  });
+}
+function editItem(it, el) {
+  inlineEdit(el, it.text, (text) => {
+    text = text.replace(STAR, "");
+    if (it.src) state.ignored.add(clean(pullKey(it.src, it.text)));
+    it.text = text;
+    commit();
+  });
+}
+function addCategory(name) {
+  name = clean(name);
+  if (!name) return;
+  if (findCat(name)) { toast(`"${name}" already exists`); return; }
+  state.cats.push({ name, items: [] });
+  commit();
+  toast(`Added category ${name}`);
+}
+function renameCategory(cat, el) {
+  inlineEdit(el, cat.name, (name) => {
+    name = clean(name);
+    const clash = findCat(name);
+    if (clash && clash !== cat) { toast(`"${name}" already exists`); render(); return; }
+    if (norm(lastCat) === norm(cat.name)) { lastCat = name; store("wh.lastCat", name); }
+    cat.name = name;
+    commit();
+  });
+}
+function moveCategory(cat, dir) {
+  const i = state.cats.indexOf(cat), j = i + dir;
+  if (j < 0 || j >= state.cats.length) return;
+  [state.cats[i], state.cats[j]] = [state.cats[j], state.cats[i]];
+  commit();
+}
+function removeCategory(cat) {
+  const open = cat.items.filter((i) => !i.done).length;
+  const done = cat.items.length - open;
+  const drop = () => {
+    state.cats.splice(state.cats.indexOf(cat), 1);
+    if (!state.cats.length) state.cats.push({ name: "Inbox", items: [] });
+    commit();
+  };
+  if (!cat.items.length) {
+    drop();
+    toast(`Removed ${cat.name}`, "Undo", () => { state.cats.push(cat); commit(); });
+    return;
+  }
+  const others = state.cats.filter((c) => c !== cat);
+  const dlg = $("#dlg");
+  const sel = h("select", { id: "moveTo" }, others.map((c) => h("option", { value: c.name }, c.name)));
+  const pulled = cat.items.some((i) => i.src && !i.done);
+  fill(dlg, 
+    h("h3", {}, `Remove "${cat.name}"?`),
+    h("p", {}, `It has ${open} open to-do${open === 1 ? "" : "s"}${done ? ` and ${done} completed` : ""}. What should happen to them?`),
+    others.length ? h("p", {}, h("label", { for: "moveTo" }, "Move them to "), sel) : null,
+    pulled ? h("p", { style: "font-size:13px;color:var(--muted)" }, "Heads up: items pulled from trackers come back on the next pull unless removed from the tracker.") : null,
+    h("div", { class: "btnrow" },
+      others.length ? h("button", { class: "iconbtn", onclick: () => {
+        const target = findCat(sel.value);
+        target.items.push(...cat.items);
+        dlg.close(); drop();
+        toast(`Moved items to ${target.name}`);
+      } }, "Move and remove") : null,
+      h("button", { class: "iconbtn danger", onclick: () => { dlg.close(); drop(); toast(`Deleted ${cat.name} and its items`); } }, "Delete all"),
+      h("button", { class: "iconbtn", onclick: () => dlg.close() }, "Cancel"),
+    ),
+  );
+  dlg.showModal();
+}
+function inlineEdit(el, value, onCommit) {
+  editing = true;
+  const input = h("input", { class: "edit-input", value });
+  let done = false;
+  const finish = (ok) => {
+    if (done) return;
+    done = true; editing = false;
+    const v = input.value.trim();
+    if (ok && v && v !== value) onCommit(v); else render();
+  };
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); finish(true); }
+    if (e.key === "Escape") finish(false);
+  });
+  input.addEventListener("blur", () => finish(true));
+  el.replaceWith(input);
+  input.focus(); input.select();
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); }
+  catch {
+    const ta = h("textarea", { style: "position:fixed;opacity:0" }); ta.value = text;
+    document.body.append(ta); ta.select(); document.execCommand("copy"); ta.remove();
+  }
+  toast("Copied to clipboard");
+}
+
+// ---------- fx ----------
+let toastTimer;
+function toast(msg, actionLabel, action) {
+  const el = $("#toast");
+  fill(el, h("span", {}, msg), actionLabel ? h("button", { onclick: () => { el.classList.remove("show"); action(); } }, actionLabel) : null);
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), actionLabel ? 5000 : 2200);
+}
+const EMPTY = "No open to-dos";
+
+// ---------- render ----------
+function render() {
+  if (editing) return;
+  renderHeader();
+  renderSidebar();
+  renderTabs();
+  const isTracker = tab.startsWith("t:");
+  $("#view-todo").hidden = tab !== "todo";
+  $("#view-brag").hidden = tab !== "brag";
+  $("#view-tracker").hidden = !isTracker;
+  $(".app").classList.toggle("wide", isTracker && !padOnTrackers);
+  $("#trackerPad").textContent = padOnTrackers ? "Hide quick add" : "Show quick add";
+  if (tab === "todo") renderBoard();
+  else if (tab === "brag") renderBrag();
+  else renderTracker();
+}
+
+let greetingBase = null;
+function renderHeader() {
+  if (!greetingBase) {
+    const hr = new Date().getHours();
+    const date = new Date().toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" });
+    greetingBase = `${hr < 12 ? "Good morning" : hr < 17 ? "Good afternoon" : "Good evening"} · ${date}`;
+  }
+  const n = allItems().filter(({ it }) => it.done && it.doneDate === today()).length;
+  $("#greeting").textContent = `${greetingBase} · ${n} completed today`;
+}
+
+function renderSidebar() {
+  if (!findCat(lastCat)) lastCat = state.cats[0]?.name || "";
+  const counts = (c) => c.items.filter((i) => !i.done).length;
+  $("#addHint").replaceChildren("Click a category to add. ", h("b", {}, "Enter"), " → ", h("b", {}, lastCat || "—"),
+    ". One item per line.");
+  $("#catPills").replaceChildren(...state.cats.map((c) =>
+    h("button", { class: "catpill" + (c.name === lastCat ? " last" : ""), style: `--c:${color(c.name)}`, title: `Add to ${c.name}`,
+      onclick: () => addItems(c.name) }, c.name, h("small", {}, counts(c)))));
+  const list = $("#tidyList");
+  list.hidden = !tidyOpen;
+  $("#tidyToggle").setAttribute("aria-expanded", tidyOpen);
+  $("#tidyToggle").textContent = tidyOpen ? "Done" : "Manage categories";
+  list.replaceChildren(...state.cats.map((c, i) => {
+    const name = h("span", { class: "name", title: "Double-click to rename" }, c.name);
+    name.addEventListener("dblclick", () => renameCategory(c, name));
+    return h("li", { style: `--c:${color(c.name)}` },
+      h("span", { class: "dot" }), name,
+      h("button", { class: "mini", title: "Move up", "aria-label": `Move ${c.name} up`, disabled: i === 0, onclick: () => moveCategory(c, -1) }, "↑"),
+      h("button", { class: "mini", title: "Move down", "aria-label": `Move ${c.name} down`, disabled: i === state.cats.length - 1, onclick: () => moveCategory(c, 1) }, "↓"),
+      h("button", { class: "mini", title: "Rename", "aria-label": `Rename ${c.name}`, onclick: () => renameCategory(c, name) }, "✎"),
+      h("button", { class: "mini", title: "Remove", "aria-label": `Remove ${c.name}`, onclick: () => removeCategory(c) }, "🗑"));
+  }));
+}
+
+function renderTabs() {
+  const open = allItems().filter(({ it }) => !it.done).length;
+  const doneToday = allItems().filter(({ it }) => it.done && it.doneDate === today()).length;
+  const tabs = [
+    { id: "todo", label: "To-Do", count: open, c: "var(--accent)" },
+    { id: "brag", label: "Completed", count: doneToday || null, c: "var(--ok)" },
+    ...state.trackers.map((t) => ({ id: "t:" + t.file, label: t.name, c: color(t.name) })),
+  ];
+  if (!tabs.some((t) => t.id === tab)) tab = "todo";
+  $("#tabs").replaceChildren(
+    ...tabs.map((t, i) => h("button", {
+      class: "tab", role: "tab", "aria-selected": t.id === tab, style: `--c:${t.c}`,
+      onclick: () => { setTab(t.id); window.scrollTo({ top: 0 }); },
+    }, t.label, t.count ? h("span", { class: "count" }, t.count) : null)),
+    h("button", { class: "iconbtn refresh", title: "Re-scan the trackers folder", onclick: async () => {
+      await loadTrackers(); render(); toast(`${state.trackers.length} tracker${state.trackers.length === 1 ? "" : "s"} found`);
+    } }, "↻"),
+  );
+}
+
+function itemRow(it, cat, showCat) {
+  const text = h("span", { class: "text", title: "Double-click to edit" }, it.text);
+  text.addEventListener("dblclick", () => editItem(it, text));
+  const tracker = it.src && state.trackers.find((t) => t.file === it.src);
+  const srcName = tracker ? tracker.name : it.src;
+  // Pulled into the tracker's own category: a bare "from tracker" is enough.
+  const srcLabel = norm(srcName) === norm(cat.name) ? "from tracker" : "from " + srcName;
+  return h("li", { class: "item" + (it.urgent ? " urgent" : "") + (it.done ? " done" : "") },
+    h("button", { class: "check", title: it.done ? "Not done after all" : "Done!", "aria-label": it.done ? `Untick ${it.text}` : `Tick off ${it.text}`,
+      onclick: () => toggleDone(it) }, it.done ? "✓" : ""),
+    h("div", {}, text,
+      (showCat || it.src) ? h("div", { class: "meta" },
+        showCat ? h("span", { class: "chip", style: `--c:${color(cat.name)}` }, cat.name) : null,
+        it.src ? h("span", { class: "chip src" + (srcLabel === "from tracker" ? " bare" : ""), title: `Pulled from ${it.src}` }, srcLabel) : null) : null),
+    h("button", { class: "star", title: it.urgent ? "Unstar" : "Star as urgent", "aria-label": it.urgent ? `Unstar ${it.text}` : `Star ${it.text}`,
+      "aria-pressed": it.urgent, onclick: () => toggleStar(it) }, "★"),
+    h("button", { class: "mini del", title: "Delete", "aria-label": `Delete ${it.text}`, onclick: () => deleteItem(it, cat) }, "✕"));
+}
+
+const byUrgency = (a, b) => (b.urgent - a.urgent) || a.added.localeCompare(b.added);
+
+function renderBoard() {
+  const q = norm(search);
+  const match = (it) => (!q || norm(it.text).includes(q)) && (!starOnly || it.urgent);
+  const open = allItems().filter(({ it }) => !it.done);
+  const starred = open.filter(({ it }) => it.urgent && match(it));
+  const view = $("#view-todo");
+
+  const searchBox = h("input", { class: "search", type: "search", placeholder: "Search", value: search, "aria-label": "Search to-dos" });
+  searchBox.addEventListener("input", () => { search = searchBox.value; renderBoardKeepFocus(); });
+
+  const toolbar = h("div", { class: "toolbar" },
+    searchBox,
+    h("button", { class: "iconbtn toggle", "aria-pressed": starOnly, onclick: () => { starOnly = !starOnly; render(); } }, "★ Urgent only"),
+    h("button", { class: "iconbtn", onclick: () => pull(false), title: "Grab to-dos from the tracker pages" }, "Pull from trackers"),
+    h("span", { class: "stats" }, `${open.length} to-do${open.length === 1 ? "" : "s"} · ${open.filter(({ it }) => it.urgent).length} starred`));
+
+  const hot = starred.length && !starOnly ? h("div", { class: "card hotlist" },
+    h("div", { class: "card-head" }, h("h3", {}, "Urgent"), h("span", { class: "bubble" }, starred.length)),
+    h("ul", { class: "items" }, starred.sort((a, b) => byUrgency(a.it, b.it)).map(({ it, cat }) => itemRow(it, cat, true)))) : null;
+
+  const cards = state.cats.map((cat) => {
+    const items = cat.items.filter((it) => !it.done && match(it)).sort(byUrgency);
+    const doneToday = cat.items.filter((it) => it.done && it.doneDate === today() && match(it));
+    if ((q || starOnly) && !items.length && !doneToday.length) return null;
+    const title = h("h3", { title: "Double-click to rename" }, cat.name);
+    title.addEventListener("dblclick", () => renameCategory(cat, title));
+    return h("article", { class: "card", style: `--c:${color(cat.name)}` },
+      h("div", { class: "card-head" }, title,
+        h("span", { class: "bubble", title: "Open to-dos" }, cat.items.filter((i) => !i.done).length),
+        h("button", { class: "mini", title: "Rename", "aria-label": `Rename ${cat.name}`, onclick: () => renameCategory(cat, title) }, "✎"),
+        h("button", { class: "mini", title: "Remove category", "aria-label": `Remove ${cat.name}`, onclick: () => removeCategory(cat) }, "🗑")),
+      items.length ? h("ul", { class: "items" }, items.map((it) => itemRow(it, cat, false)))
+        : h("div", { class: "empty" }, EMPTY),
+      doneToday.length ? h("details", { class: "done-today" },
+        h("summary", {}, `${doneToday.length} completed today`),
+        h("ul", { class: "items" }, doneToday.map((it) => itemRow(it, cat, false)))) : null);
+  }).filter(Boolean);
+
+  fill(view, toolbar, hot,
+    cards.length ? h("div", { class: "board" }, cards) : h("p", { class: "empty" }, "No matches"));
+}
+function renderBoardKeepFocus() {
+  const pos = document.activeElement?.selectionStart;
+  renderBoard();
+  const box = $("#view-todo .search");
+  box.focus();
+  if (pos != null) box.setSelectionRange(pos, pos);
+}
+
+function standupText(yday, ydayItems, plan) {
+  const line = ({ it, cat }) => `- ${it.text} [${cat.name}]`;
+  return [`Yesterday (${prettyDate(yday)}):`, ...(ydayItems.length ? ydayItems.map(line) : ["- (nothing logged)"]),
+    "", "Today:", ...(plan.length ? plan.map(line) : ["- (nothing urgent)"])].join("\n");
+}
+
+function renderBrag() {
+  const view = $("#view-brag");
+  const done = allItems().filter(({ it }) => it.done);
+  const byDay = new Map();
+  for (const x of done) {
+    if (!byDay.has(x.it.doneDate)) byDay.set(x.it.doneDate, []);
+    byDay.get(x.it.doneDate).push(x);
+  }
+  const yday = lastWorkday(), now = today();
+  const ydayItems = byDay.get(yday) || [];
+  const todayItems = byDay.get(now) || [];
+  const plan = allItems().filter(({ it }) => !it.done && it.urgent);
+  const li = (cls) => ({ it, cat }) => h("li", { class: cls }, it.text, " ", h("span", { class: "chip", style: `--c:${color(cat.name)}` }, cat.name));
+
+  const standup = h("article", { class: "card big" },
+    h("div", { class: "card-head" }, h("h3", {}, "Standup"), h("span", { class: "stamp" }, prettyDate(yday))),
+    h("div", { class: "card-body" },
+      h("h4", {}, `Yesterday · ${prettyDate(yday)}`),
+      ydayItems.length ? h("ul", {}, ydayItems.map(li(""))) : h("p", { class: "empty", style: "padding:0 0 8px" }, "Nothing completed"),
+      h("h4", {}, "Today · urgent"),
+      plan.length ? h("ul", {}, plan.map(li("plan"))) : h("p", { class: "empty", style: "padding:0 0 8px" }, "No urgent to-dos"),
+      h("div", { class: "btnrow" },
+        h("button", { class: "iconbtn", onclick: () => copyText(standupText(yday, ydayItems, plan)) }, "Copy for standup"))));
+
+  const todayCard = h("article", { class: "card big", style: "--c:var(--ok)" },
+    h("div", { class: "card-head" }, h("h3", {}, "Today"), h("span", { class: "bubble" }, todayItems.length)),
+    h("div", { class: "card-body" },
+      todayItems.length ? h("ul", {}, todayItems.map(li(""))) : h("p", { class: "empty", style: "padding:0" }, "Nothing completed yet"),
+      todayItems.length ? h("div", { class: "btnrow" },
+        h("button", { class: "iconbtn", onclick: () => copyText(todayItems.map(({ it, cat }) => `- ${it.text} [${cat.name}]`).join("\n")) }, "Copy today")) : null));
+
+  const days = [...byDay.keys()].sort().reverse();
+  const shown = days.slice(0, bragDays);
+  const dayCards = shown.map((d) => {
+    const entries = byDay.get(d);
+    return h("article", { class: "card day", style: `--c:${color(d)}` },
+      h("div", { class: "card-head" }, h("h3", {}, prettyDate(d)),
+        h("span", { class: "stamp" }, `${entries.length} item${entries.length === 1 ? "" : "s"}`)),
+      h("ul", { class: "items" }, entries.map(({ it, cat }) => itemRow(it, cat, true))));
+  });
+
+  fill(view, 
+    h("div", { class: "brag-top" }, standup, todayCard),
+    h("h2", { class: "section-title" }, "History"),
+    dayCards.length ? h("div", { class: "days" }, dayCards) : h("p", { class: "empty" }, "Completed items will appear here"),
+    days.length > bragDays ? h("button", { class: "iconbtn more", onclick: () => { bragDays += 14; render(); } }, `Show older (${days.length - bragDays} more days)`) : null);
+}
+
+function renderTracker() {
+  const file = tab.slice(2);
+  const t = state.trackers.find((x) => x.file === file);
+  $("#trackerTitle").textContent = (t ? t.name : file);
+  const url = "trackers/" + encodeURIComponent(file);
+  $("#trackerOpen").href = url;
+  const frames = $("#frames");
+  let frame = [...frames.children].find((f) => f.dataset.file === file);
+  if (!frame) {
+    frame = h("iframe", { src: url, title: t ? t.name : file });
+    frame.dataset.file = file;
+    frames.append(frame);
+  }
+  for (const f of frames.children) f.hidden = f !== frame;
+}
+
+// ---------- wiring ----------
+function setTab(id) {
+  tab = id;
+  store("wh.tab", tab);
+  history.replaceState(null, "", "#" + encodeURIComponent(tab));
+  render();
+}
+window.addEventListener("hashchange", () => setTab(decodeURIComponent(location.hash.slice(1)) || "todo"));
+$("#newText").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); addItems(lastCat || state.cats[0].name); }
+});
+$("#newCatForm").addEventListener("submit", (e) => { e.preventDefault(); addCategory($("#newCatName").value); $("#newCatName").value = ""; });
+$("#tidyToggle").addEventListener("click", () => { tidyOpen = !tidyOpen; renderSidebar(); });
+$("#trackerReload").addEventListener("click", () => {
+  const f = [...$("#frames").children].find((x) => !x.hidden);
+  if (f) f.src = f.src;
+});
+$("#trackerPull").addEventListener("click", () => pull(false));
+$("#trackerPad").addEventListener("click", () => {
+  padOnTrackers = !padOnTrackers;
+  store("wh.padOnTrackers", padOnTrackers ? "1" : "0");
+  render();
+});
+document.addEventListener("keydown", (e) => {
+  const t = e.target;
+  if (e.key === "/" && !/INPUT|TEXTAREA|SELECT/.test(t.tagName) && !t.isContentEditable) { e.preventDefault(); $("#newText").focus(); }
+});
+
+const THEMES = ["auto", "light", "dark"];
+function applyTheme(mode) {
+  if (mode === "auto") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.dataset.theme = mode;
+  $("#themeBtn").textContent = { auto: "Auto", light: "Light", dark: "Dark" }[mode];
+  $("#themeBtn").title = `Theme: ${mode} (click to change)`;
+}
+let theme = store("wh.theme") || "auto";
+applyTheme(theme);
+$("#themeBtn").addEventListener("click", () => {
+  theme = THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length];
+  store("wh.theme", theme); applyTheme(theme);
+});
+
+// Pick up hand edits to todos.md when coming back to the tab.
+window.addEventListener("focus", async () => {
+  if (editing || saving || saveTimer) return;
+  try { if (await loadMd()) render(); } catch {}
+});
+// Flush a pending save if the tab is closed mid-debounce.
+window.addEventListener("pagehide", () => {
+  if (saveTimer) { clearTimeout(saveTimer); navigator.sendBeacon?.("/api/todos", serialize()); }
+});
+
+(async function init() {
+  try {
+    await loadMd();
+  } catch {
+    const b = $("#banner");
+    b.hidden = false;
+    b.replaceChildren("Can't reach the Work Hub server. Run ", h("code", {}, "python server.py"),
+      " in the work-hub folder and open ", h("code", {}, "http://127.0.0.1:8765"), ".");
+    state.cats = [{ name: "Inbox", items: [] }];
+    setStatus("error");
+    render();
+    return;
+  }
+  await loadTrackers();
+  render();
+  pull(true);
+})();
+</script>
+</body>
+</html>
